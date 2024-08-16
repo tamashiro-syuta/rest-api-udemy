@@ -4,7 +4,7 @@ package model
 import "time"
 
 type User struct {
-	ID        unit 		  `json:"id" gorm:"primary_key"` // NOTE: jsonに変換時に自動的に小文字に変換させる
+	ID        uint 		  `json:"id" gorm:"primary_key"` // NOTE: jsonに変換時に自動的に小文字に変換させる
 	Email     string    `json:"email" gorm:"unique"`
 	Password  string    `json:"password"`
 	CreatedAt time.Time `json:"created_at"`
