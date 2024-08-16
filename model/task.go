@@ -7,7 +7,7 @@ type Task struct {
 	Title     string    `json:"title" gorm:"not null"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	// NOTE: 外部キーでユーザーと紐付ける
+	// NOTE: 外部キーでユーザーと紐付ける(CASCADEにすることでユーザーの削除時にタスクも削除する)
 	User      User      `json:"user" gorm:"foreignKey:UserId; constraint:OnDelete:CASCADE"`
 	UserId    uint      `json:"user_id" gorm:"not null"`
 }
