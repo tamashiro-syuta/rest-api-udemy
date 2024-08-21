@@ -29,7 +29,6 @@ func (tv *userValidator) UserValidate(user model.User) error {
 			&user.Password,
 			validation.Required.Error("password is required"),
 			validation.Length(6, 30).Error("limited min 6 max 30 char"),
-			is.Email.Error("email is invalid"),
 		),
 	)
 }
