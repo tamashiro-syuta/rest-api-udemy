@@ -6,6 +6,7 @@ import (
 	"rest-api-udemy/repository"
 	"rest-api-udemy/router"
 	"rest-api-udemy/usecase"
+	"rest-api-udemy/validator"
 )
 
 func main() {
@@ -13,11 +14,13 @@ func main() {
 	db := db.NewDB()
 	// NOTE: DBのインスタンスを引数にしてリポジトリのコンストラクターを呼び出す
 	userRepository := repository.NewUserRepository(db)
-	userUsecase := usecase.NewUserUsecase(userRepository)
+	userValidator := validator.NewUserValidator()
+	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
 	userController := controller.NewUserController(userUsecase)
 
 	taskRepository := repository.NewTaskRepository(db)
-	taskUsecase := usecase.NewTaskUsecase(taskRepository)
+	taskValidator := validator.NewTaskValidator()
+	taskUsecase := usecase.NewTaskUsecase(taskRepository, taskValidator)
 	taskController := controller.NewTaskController(taskUsecase)
 
 	e := router.NewRouter(userController, taskController)

@@ -4,6 +4,7 @@ import (
 	"os"
 	"rest-api-udemy/model"
 	"rest-api-udemy/repository"
+	"rest-api-udemy/validator"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -19,16 +20,20 @@ type IUserUsecase interface {
 
 type userUsecase struct {
 	ur repository.IUserRepository
+	uv validator.IUserValidator
 }
 
 // NOTE: このコンストラクタ-でリポジトリのインターフェースをユースケースを渡すことで、リポジトリ(のインターフェース)からユースケースに依存関係を注入(依存の向き: リポジトリ -> リポジトリのインターフェース -> ユースケース)
-func NewUserUsecase(ur repository.IUserRepository) IUserUsecase {
+func NewUserUsecase(ur repository.IUserRepository, uv validator.IUserValidator) IUserUsecase {
 	// NOTE: 構造体のインスタンスを作成し、そのポインタを返す
-	return &userUsecase{ur}
+	return &userUsecase{ur, uv}
 }
 
 // NOTE: Interfaceを満たすようにメソッドを実装
 func (uu *userUsecase) SignUp(user model.User) (model.UserResponse, error) {
+	if err := uu.uv.UserValidate(user); err != nil {
+		return model.UserResponse{}, err
+	}
 	encryption_complexity := 10
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), encryption_complexity)
 	if err != nil {
@@ -50,6 +55,9 @@ func (uu *userUsecase) SignUp(user model.User) (model.UserResponse, error) {
 }
 
 func (uu *userUsecase) Login(user model.User) (string, error) {
+	if err := uu.uv.UserValidate(user); err != nil {
+		return "", err
+	}
 	storedUser := model.User{}
 	if err := uu.ur.GetUserByEmail(&storedUser, user.Email); err != nil {
 		return "", err
